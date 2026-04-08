@@ -6,19 +6,17 @@
   <title>SEVDESKPRO</title>
   <style>
     :root {
-      --bg: #0b1020;
-      --panel: #121a2e;
-      --panel-2: #18233d;
-      --border: #2a3557;
-      --text: #eef2ff;
-      --muted: #a9b3d1;
-      --accent: #5b8cff;
-      --accent-2: #00c2a8;
-      --danger: #ff5f73;
-      --warning: #ffb648;
-      --success: #34d399;
-      --shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-      --radius: 18px;
+      --bg: #111318;
+      --panel: #1a1d24;
+      --panel-2: #20242d;
+      --border: #303540;
+      --text: #f1f3f5;
+      --muted: #a8b0bd;
+      --accent: #4c7dff;
+      --danger: #e85d75;
+      --warning: #f0ad4e;
+      --success: #3fbf7f;
+      --radius: 12px;
     }
 
     * {
@@ -29,138 +27,111 @@
 
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #09101d 0%, #0b1020 100%);
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
     }
 
     .container {
-      width: min(1200px, calc(100% - 32px));
+      width: min(1100px, calc(100% - 24px));
       margin: 0 auto;
     }
 
     header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(12px);
-      background: rgba(11, 16, 32, 0.85);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--border);
+      background: #15181f;
     }
 
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
       padding: 18px 0;
-      gap: 18px;
+      flex-wrap: wrap;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
     .logo {
-      width: 50px;
-      height: 50px;
-      border-radius: 16px;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--accent);
       display: grid;
       place-items: center;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-      box-shadow: var(--shadow);
+      font-weight: bold;
+      color: #fff;
     }
 
     .brand h1 {
-      font-size: 1.45rem;
-      letter-spacing: 0.5px;
+      font-size: 1.3rem;
     }
 
     .brand p {
       color: var(--muted);
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       margin-top: 2px;
     }
 
     nav {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     nav a {
-      color: var(--muted);
       text-decoration: none;
-      padding: 10px 14px;
-      border-radius: 999px;
-      transition: 0.2s ease;
-      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 8px 12px;
+      border-radius: 8px;
     }
 
     nav a:hover {
+      background: #20242d;
       color: var(--text);
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.08);
     }
 
     .hero {
-      padding: 42px 0 20px;
+      padding: 28px 0 16px;
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 24px;
-      align-items: stretch;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
     }
 
     .hero-card,
     .panel,
     .stat,
-    .ticket-card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .ticket-card,
+    .info-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
     }
 
     .hero-card {
-      padding: 30px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(91, 140, 255, 0.13);
-      color: #cddbff;
-      border: 1px solid rgba(91, 140, 255, 0.28);
-      margin-bottom: 18px;
-      font-size: 0.92rem;
+      padding: 22px;
     }
 
     .hero h2 {
-      font-size: clamp(2rem, 4vw, 3.3rem);
-      line-height: 1.05;
-      margin-bottom: 14px;
-    }
-
-    .hero h2 span {
-      color: #9ec0ff;
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      margin-bottom: 12px;
+      line-height: 1.1;
     }
 
     .hero p {
       color: var(--muted);
-      line-height: 1.7;
-      max-width: 65ch;
+      line-height: 1.6;
     }
 
     .hero-actions {
       display: flex;
-      gap: 12px;
-      margin-top: 22px;
+      gap: 10px;
+      margin-top: 18px;
       flex-wrap: wrap;
     }
 
@@ -168,368 +139,281 @@
     .btn {
       border: none;
       cursor: pointer;
-      border-radius: 14px;
-      padding: 12px 18px;
-      font-weight: 700;
-      transition: 0.2s ease;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-weight: bold;
+      text-decoration: none;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #7c9fff);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.06);
+      background: var(--accent);
+      color: #fff;
     }
 
     .btn-secondary {
-      background: rgba(255,255,255,0.05);
+      background: var(--panel-2);
       color: var(--text);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.09);
+      border: 1px solid var(--border);
     }
 
     .preview-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
     .stat {
-      padding: 20px;
-      min-height: 140px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      padding: 18px;
     }
 
     .stat small {
       color: var(--muted);
-      font-size: 0.95rem;
+      display: block;
+      margin-bottom: 8px;
     }
 
     .stat strong {
-      font-size: 2rem;
-      margin-top: 10px;
-    }
-
-    .accent-line {
-      height: 6px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      opacity: 0.9;
+      font-size: 1.8rem;
     }
 
     section {
-      padding: 18px 0 26px;
+      padding: 14px 0 22px;
     }
 
     .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 20px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
+      margin-bottom: 14px;
     }
 
     .section-title h3 {
-      font-size: 1.45rem;
+      font-size: 1.3rem;
+      margin-bottom: 4px;
     }
 
     .section-title p {
       color: var(--muted);
-      max-width: 700px;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     .dashboard {
       display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 22px;
+      grid-template-columns: 350px 1fr;
+      gap: 18px;
       align-items: start;
     }
 
     .panel {
-      padding: 22px;
+      padding: 18px;
     }
 
     .panel h4 {
-      font-size: 1.1rem;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+      font-size: 1.05rem;
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 12px;
     }
 
     .field {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 14px;
+      gap: 6px;
+      margin-bottom: 12px;
     }
 
     .field label {
-      font-size: 0.95rem;
       color: var(--muted);
+      font-size: 0.92rem;
     }
 
     .field input,
     .field select,
     .field textarea {
       width: 100%;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.04);
+      background: #14171d;
       color: var(--text);
-      padding: 13px 14px;
-      outline: none;
-      transition: 0.2s ease;
-      font-size: 0.96rem;
-    }
-
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      border-color: rgba(91, 140, 255, 0.7);
-      box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.15);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font-size: 0.95rem;
     }
 
     textarea {
-      min-height: 110px;
+      min-height: 100px;
       resize: vertical;
+    }
+
+    .helper,
+    .error {
+      font-size: 0.88rem;
     }
 
     .helper {
       color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.5;
-      margin-top: 2px;
+    }
+
+    .error {
+      color: #ff9eb0;
+      min-height: 18px;
+      margin-bottom: 10px;
     }
 
     .toolbar {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr 0.7fr auto;
-      gap: 12px;
-      margin-bottom: 18px;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr auto;
+      gap: 10px;
+      margin-bottom: 14px;
     }
 
     .tickets-list {
       display: grid;
-      gap: 14px;
+      gap: 12px;
     }
 
     .ticket-card {
-      padding: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 16px;
     }
 
-    .ticket-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      align-items: start;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .ticket-title {
-      font-size: 1.08rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .ticket-meta {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-
-    .ticket-desc {
-      color: #dce4ff;
-      line-height: 1.7;
-      margin: 10px 0 14px;
-      white-space: pre-wrap;
-    }
-
+    .ticket-top,
     .ticket-bottom {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      align-items: center;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .tags {
+    .ticket-top {
+      margin-bottom: 10px;
+    }
+
+    .ticket-title {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .ticket-meta,
+    .ticket-desc {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.94rem;
+    }
+
+    .ticket-desc {
+      margin: 8px 0 12px;
+      white-space: pre-wrap;
+    }
+
+    .tags,
+    .actions,
+    .info-boxes {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
 
     .tag,
-    .status-pill {
-      padding: 7px 11px;
-      border-radius: 999px;
-      font-size: 0.84rem;
-      font-weight: 700;
-      border: 1px solid transparent;
+    .status-pill,
+    .small-btn {
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
     }
 
     .priority-niski {
-      background: rgba(52, 211, 153, 0.14);
-      color: #8ff0cb;
-      border-color: rgba(52, 211, 153, 0.24);
+      background: rgba(63, 191, 127, 0.15);
+      color: #92edba;
     }
 
     .priority-sredni {
-      background: rgba(255, 182, 72, 0.15);
-      color: #ffd48e;
-      border-color: rgba(255, 182, 72, 0.24);
+      background: rgba(240, 173, 78, 0.15);
+      color: #ffd08c;
     }
 
     .priority-wysoki {
-      background: rgba(255, 95, 115, 0.14);
-      color: #ff9baa;
-      border-color: rgba(255, 95, 115, 0.24);
+      background: rgba(232, 93, 117, 0.15);
+      color: #ffb0be;
     }
 
     .status-nowe {
-      background: rgba(91, 140, 255, 0.14);
-      color: #b8d0ff;
-      border-color: rgba(91, 140, 255, 0.24);
+      background: rgba(76, 125, 255, 0.16);
+      color: #b8cbff;
     }
 
     .status-wtrakcie {
-      background: rgba(255, 182, 72, 0.15);
-      color: #ffe0a9;
-      border-color: rgba(255, 182, 72, 0.24);
+      background: rgba(240, 173, 78, 0.15);
+      color: #ffdca4;
     }
 
     .status-zamkniete {
-      background: rgba(52, 211, 153, 0.14);
-      color: #9df3d2;
-      border-color: rgba(52, 211, 153, 0.24);
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .small-btn {
-      padding: 10px 13px;
-      border-radius: 12px;
-      font-size: 0.9rem;
+      background: rgba(63, 191, 127, 0.15);
+      color: #a6f0c9;
     }
 
     .btn-danger {
-      background: rgba(255, 95, 115, 0.12);
-      color: #ffb6c0;
-      border: 1px solid rgba(255, 95, 115, 0.22);
-    }
-
-    .btn-danger:hover {
-      background: rgba(255, 95, 115, 0.18);
+      background: rgba(232, 93, 117, 0.15);
+      color: #ffb0be;
+      border: 1px solid rgba(232, 93, 117, 0.2);
     }
 
     .btn-ghost {
-      background: rgba(255,255,255,0.04);
+      background: var(--panel-2);
       color: var(--text);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .btn-ghost:hover {
-      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
     }
 
     .empty-state {
       text-align: center;
-      padding: 32px 20px;
+      padding: 28px 16px;
       color: var(--muted);
-      border: 1px dashed rgba(255,255,255,0.12);
-      border-radius: 18px;
-      background: rgba(255,255,255,0.02);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      background: #171a21;
     }
 
     .info-boxes {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 8px;
+      gap: 12px;
     }
 
     .info-box {
-      padding: 18px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
+      padding: 16px;
     }
 
     .info-box h5 {
-      margin-bottom: 8px;
       font-size: 1rem;
+      margin-bottom: 8px;
     }
 
     .info-box p {
       color: var(--muted);
-      line-height: 1.65;
-      font-size: 0.95rem;
+      font-size: 0.94rem;
+      line-height: 1.55;
     }
 
     footer {
-      padding: 26px 0 36px;
-      color: var(--muted);
+      padding: 22px 0 30px;
       text-align: center;
-      font-size: 0.94rem;
-    }
-
-    .error {
-      color: #ffb4c0;
+      color: var(--muted);
       font-size: 0.92rem;
-      margin-bottom: 12px;
-      min-height: 18px;
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 900px) {
       .hero,
-      .dashboard {
-        grid-template-columns: 1fr;
-      }
-
+      .dashboard,
       .toolbar,
       .grid-2,
       .info-boxes {
         grid-template-columns: 1fr;
       }
-
-      .preview-grid {
-        grid-template-columns: 1fr 1fr;
-      }
     }
 
-    @media (max-width: 640px) {
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
+    @media (max-width: 600px) {
       .preview-grid {
         grid-template-columns: 1fr;
-      }
-
-      .hero-card,
-      .panel,
-      .ticket-card {
-        padding: 18px;
       }
     }
   </style>
@@ -555,13 +439,10 @@
   <main class="container">
     <section class="hero" id="start">
       <div class="hero-card">
-        <div class="badge">💻 Projekt autorski • JavaScript • localStorage</div>
-        <h2>Ogarnij zgłoszenia IT z poziomu <span>jednej aplikacji</span></h2>
+        <h2>SEVDESKPRO</h2>
         <p>
-          SEVDESKPRO to prosty, ale konkretny system helpdesk. Możesz dodawać zgłoszenia,
-          filtrować je, zmieniać statusy, liczyć statystyki i przechowywać dane lokalnie.
-          Projekt spełnia typowe wymagania szkolne: obiekty, zdarzenia, manipulacja DOM,
-          dynamiczne tworzenie elementów i logika po stronie klienta.
+          Prosta aplikacja do obsługi zgłoszeń. Możesz dodawać nowe problemy, filtrować je,
+          zmieniać statusy i trzymać wszystko w jednym miejscu.
         </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#panel">Przejdź do panelu</a>
@@ -597,7 +478,7 @@
       <div class="section-title">
         <div>
           <h3>Panel helpdesk</h3>
-          <p>Dodaj nowe zgłoszenie, zarządzaj statusem i korzystaj z filtrowania. Wszystko działa dynamicznie bez przeładowania strony.</p>
+          <p>Dodawaj zgłoszenia, wyszukuj je i zmieniaj ich status w jednym panelu.</p>
         </div>
       </div>
 
@@ -681,23 +562,23 @@
     <section id="funkcje">
       <div class="section-title">
         <div>
-          <h3>Dlaczego ten projekt spełnia wymagania</h3>
-          <p>To nie jest tylko ładny layout. Tutaj naprawdę działa logika aplikacji po stronie klienta.</p>
+          <h3>Dodatkowe informacje</h3>
+          <p>Panel został przygotowany tak, żeby był prosty, czytelny i wygodny w użyciu.</p>
         </div>
       </div>
 
       <div class="info-boxes">
         <div class="info-box">
-          <h5>JavaScript i obiekty</h5>
-          <p>Projekt używa klasy <strong>Ticket</strong> i klasy <strong>HelpDeskApp</strong>, więc masz obiektowość zamiast samego klepania ifów.</p>
+          <h5>Szybkie dodawanie</h5>
+          <p>Formularz pozwala w kilka sekund dodać nowe zgłoszenie z kategorią, priorytetem i opisem problemu.</p>
         </div>
         <div class="info-box">
-          <h5>DOM i zdarzenia</h5>
-          <p>Jest <strong>querySelector</strong>, <strong>getElementById</strong>, <strong>getElementsByClassName</strong>, dynamiczne generowanie kart i obsługa zdarzeń przez <strong>addEventListener</strong>.</p>
+          <h5>Filtrowanie i wyszukiwanie</h5>
+          <p>Możesz sortować zgłoszenia po statusie i priorytecie oraz wyszukiwać je po nazwie, autorze lub kategorii.</p>
         </div>
         <div class="info-box">
-          <h5>Przechowywanie danych</h5>
-          <p>Zgłoszenia zapisują się w <strong>localStorage</strong>, więc po odświeżeniu strony dalej są na miejscu.</p>
+          <h5>Przejrzysty widok</h5>
+          <p>Każde zgłoszenie jest pokazane jako osobna karta, dzięki czemu łatwo ogarnąć całą listę.</p>
         </div>
       </div>
     </section>
@@ -1001,4 +882,3 @@
   </script>
 </body>
 </html>
-
