@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HelpDesk PRO – System Zgłoszeń</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f6fa; --surface: #ffffff; --surface2: #f0f1f6;
+      --border: #e2e4ed; --text: #1a1c2e; --text-muted: #6b7280;
+      --accent: #5046e5; --accent-light: #ede9fe; --accent-dark: #3730a3;
+      --success: #059669; --success-light: #d1fae5;
+      --warning: #d97706; --warning-light: #fef3c7;
+      --danger: #dc2626; --danger-light: #fee2e2;
+      --info: #0284c7; --info-light: #e0f2fe;
+      --radius: 10px; --radius-sm: 6px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; font-size: 15px;
+    }
+    header {
+      background: var(--accent); color: #fff;
+      padding: 0 2rem; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .logo-icon {
+      width: 28px; height: 28px; background: rgba(255,255,255,0.2);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    #stats-bar { display: flex; gap: 1.2rem; font-size: 13px; }
+    .stat-pill {
+      background: rgba(255,255,255,0.15); border-radius: 20px;
+      padding: 4px 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .stat-pill strong { font-weight: 700; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 1.75rem 1.5rem; }
+    .grid-2 { display: grid; grid-template-columns: 370px 1fr; gap: 1.5rem; align-items: start; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .card-header {
+      padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border);
+      font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+    }
+    .card-body { padding: 1.25rem; }
+    .form-group { margin-bottom: 0.9rem; }
+    label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text-muted); margin-bottom: 5px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    input[type="text"], input[type="email"], textarea, select {
+      width: 100%; padding: 9px 12px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-size: 14px; font-family: inherit; color: var(--text);
+      background: var(--surface); transition: border-color 0.15s, box-shadow 0.15s; outline: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 3px rgba(80,70,229,0.12);
+    }
+    input.error, textarea.error, select.error { border-color: var(--danger); }
+    .error-msg { font-size: 12px; color: var(--danger); margin-top: 4px; display: none; }
+    .error-msg.show { display: block; }
+    textarea { resize: vertical; min-height: 80px; }
+    #draft-notice {
+      font-size: 12px; color: var(--info); margin-bottom: 0.75rem;
+      background: var(--info-light); border-radius: var(--radius-sm);
+      padding: 6px 10px; display: none; align-items: center; gap: 6px;
+    }
+    #draft-notice.show { display: flex; }
+    .priority-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
+    .priority-btn {
+      padding: 7px 4px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--surface); cursor: pointer; font-size: 12px;
+      font-weight: 500; text-align: center; transition: all 0.15s; color: var(--text-muted);
+    }
+    .priority-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .priority-btn.active[data-priority="low"]     { background: var(--success-light); border-color: var(--success); color: var(--success); }
+    .priority-btn.active[data-priority="medium"]  { background: var(--info-light); border-color: var(--info); color: var(--info); }
+    .priority-btn.active[data-priority="high"]    { background: var(--warning-light); border-color: var(--warning); color: var(--warning); }
+    .priority-btn.active[data-priority="critical"]{ background: var(--danger-light); border-color: var(--danger); color: var(--danger); }
+    .btn-submit {
+      width: 100%; padding: 11px; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius-sm); font-size: 15px;
+      font-weight: 600; cursor: pointer; transition: background 0.15s, transform 0.1s; margin-top: 0.5rem;
+    }
+    .btn-submit:hover { background: var(--accent-dark); }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-clear-draft {
+      width: 100%; margin-top: 6px; padding: 7px; font-size: 13px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--surface); color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+    }
+    .btn-clear-draft:hover { border-color: var(--danger); color: var(--danger); }
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--accent); color: #fff; padding: 12px 20px;
+      border-radius: var(--radius); font-size: 14px; font-weight: 500;
+      box-shadow: var(--shadow-md); transform: translateY(100px); opacity: 0;
+      transition: all 0.3s cubic-bezier(.34,1.56,.64,1); z-index: 999;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .filter-btn {
+      padding: 6px 14px; border: 1.5px solid var(--border); border-radius: 20px;
+      background: var(--surface); font-size: 13px; cursor: pointer;
+      transition: all 0.15s; color: var(--text-muted); font-weight: 500;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    #search-input {
+      width: 100%; padding: 8px 14px; border: 1.5px solid var(--border);
+      border-radius: 20px; font-size: 13px; outline: none;
+      transition: border-color 0.15s; margin-bottom: 0.75rem;
+      color: var(--text); background: var(--surface);
+    }
+    #search-input:focus { border-color: var(--accent); }
+    .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .list-count { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    #sort-select {
+      padding: 5px 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+      font-size: 13px; background: var(--surface); color: var(--text); cursor: pointer; outline: none; width: auto;
+    }
+    #ticket-list { display: flex; flex-direction: column; gap: 10px; }
+    .ticket-item {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.25rem;
+      cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .ticket-item:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(80,70,229,0.07); }
+    .ticket-item.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(80,70,229,0.13); }
+    .ticket-id { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+    .ticket-title { font-weight: 600; font-size: 14px; line-height: 1.4; margin-bottom: 6px; }
+    .ticket-desc {
+      font-size: 13px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .ticket-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ticket-time { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+    .badge {
+      padding: 3px 10px; border-radius: 12px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .badge-status-new      { background: var(--info-light); color: var(--info); }
+    .badge-status-open     { background: var(--warning-light); color: var(--warning); }
+    .badge-status-resolved { background: var(--success-light); color: var(--success); }
+    .badge-status-closed   { background: var(--surface2); color: var(--text-muted); }
+    .badge-priority-low      { background: var(--success-light); color: var(--success); }
+    .badge-priority-medium   { background: var(--info-light); color: var(--info); }
+    .badge-priority-high     { background: var(--warning-light); color: var(--warning); }
+    .badge-priority-critical { background: var(--danger-light); color: var(--danger); }
+    #detail-panel { display: none; }
+    #detail-panel.visible { display: block; }
+    .detail-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; }
+    .detail-title { font-size: 1.05rem; font-weight: 700; line-height: 1.4; flex: 1; }
+    .detail-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .detail-meta-item { font-size: 13px; }
+    .detail-meta-item span { color: var(--text-muted); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+    .detail-desc {
+      background: var(--bg); border-radius: var(--radius-sm); padding: 1rem;
+      font-size: 14px; line-height: 1.6; color: var(--text);
+      margin-bottom: 1.25rem; border: 1px solid var(--border);
+    }
+    .detail-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .btn-action {
+      padding: 7px 16px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+      background: var(--surface); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s; color: var(--text);
+    }
+    .btn-action:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .btn-action.danger:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-light); }
+    .comments-section { margin-top: 1rem; }
+    .comments-title { font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 10px; }
+    .comment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .comment-item { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; line-height: 1.5; }
+    .comment-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+    .comment-add { display: flex; gap: 8px; }
+    .comment-add textarea { flex: 1; min-height: 60px; font-size: 13px; padding: 8px 10px; }
+    .btn-comment {
+      padding: 8px 14px; background: var(--accent); color: #fff; border: none;
+      border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+      cursor: pointer; align-self: flex-end; transition: background 0.15s;
+    }
+    .btn-comment:hover { background: var(--accent-dark); }
+    .empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 14px; }
+    #no-selection { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+    #no-selection .icon { font-size: 3rem; margin-bottom: 1rem; }
+    #no-selection h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+    #no-selection p { font-size: 13px; }
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      #stats-bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🎫</div>
+    HelpDesk PRO
+  </div>
+  <div id="stats-bar">
+    <div class="stat-pill">Wszystkich: <strong id="stat-all">0</strong></div>
+    <div class="stat-pill">Nowych: <strong id="stat-new">0</strong></div>
+    <div class="stat-pill">Otwartych: <strong id="stat-open">0</strong></div>
+    <div class="stat-pill">Rozwiązanych: <strong id="stat-resolved">0</strong></div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="grid-2">
+
+    <!-- LEWA KOLUMNA: FORMULARZ -->
+    <div>
+      <div class="card">
+        <div class="card-header">✏️ Nowe zgłoszenie</div>
+        <div class="card-body">
+          <div id="draft-notice">💾 Odtworzono niezapisany szkic z pamięci sesji.</div>
+
+          <div class="form-group">
+            <label for="f-name">Imię i nazwisko</label>
+            <input type="text" id="f-name" placeholder="np. Jan Kowalski" />
+            <div class="error-msg" id="err-name">To pole jest wymagane (min. 2 znaki).</div>
+          </div>
+          <div class="form-group">
+            <label for="f-email">Adres e-mail</label>
+            <input type="email" id="f-email" placeholder="jan@firma.pl" />
+            <div class="error-msg" id="err-email">Podaj poprawny adres e-mail.</div>
+          </div>
+          <div class="form-group">
+            <label for="f-category">Kategoria</label>
+            <select id="f-category">
+              <option value="">-- wybierz kategorię --</option>
+              <option value="Sieć">Sieć / Internet</option>
+              <option value="Sprzęt">Sprzęt komputerowy</option>
+              <option value="Oprogramowanie">Oprogramowanie</option>
+              <option value="Konto">Konto / Dostępy</option>
+              <option value="Drukarka">Drukarka / Skaner</option>
+              <option value="Inne">Inne</option>
+            </select>
+            <div class="error-msg" id="err-category">Wybierz kategorię.</div>
+          </div>
+          <div class="form-group">
+            <label for="f-title">Tytuł zgłoszenia</label>
+            <input type="text" id="f-title" placeholder="Krótki opis problemu..." />
+            <div class="error-msg" id="err-title">To pole jest wymagane (min. 3 znaki).</div>
+          </div>
+          <div class="form-group">
+            <label for="f-desc">Szczegółowy opis</label>
+            <textarea id="f-desc" placeholder="Opisz problem jak najdokładniej..."></textarea>
+            <div class="error-msg" id="err-desc">Opis jest wymagany (min. 10 znaków).</div>
+          </div>
+          <div class="form-group">
+            <label>Priorytet</label>
+            <div class="priority-grid" id="priority-grid">
+              <button class="priority-btn" data-priority="low">🟢 Niski</button>
+              <button class="priority-btn active" data-priority="medium">🔵 Średni</button>
+              <button class="priority-btn" data-priority="high">🟡 Wysoki</button>
+              <button class="priority-btn" data-priority="critical">🔴 Krytyczny</button>
+            </div>
+          </div>
+
+          <button class="btn-submit" id="btn-submit">Wyślij zgłoszenie</button>
+          <button class="btn-clear-draft" id="btn-clear-draft">Wyczyść szkic</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRAWA KOLUMNA -->
+    <div>
+      <input type="text" id="search-input" placeholder="🔍 Szukaj po tytule, nazwisku, kategorii lub ID..." />
+
+      <div class="filters" id="filters-bar">
+        <button class="filter-btn active" data-filter="all">Wszystkie</button>
+        <button class="filter-btn" data-filter="new">Nowe</button>
+        <button class="filter-btn" data-filter="open">W trakcie</button>
+        <button class="filter-btn" data-filter="resolved">Rozwiązane</button>
+        <button class="filter-btn" data-filter="closed">Zamknięte</button>
+      </div>
+
+      <div class="list-header">
+        <span class="list-count" id="list-count">0 zgłoszeń</span>
+        <select id="sort-select">
+          <option value="newest">Najnowsze</option>
+          <option value="oldest">Najstarsze</option>
+          <option value="priority-high">Priorytet ↑</option>
+          <option value="priority-low">Priorytet ↓</option>
+        </select>
+      </div>
+
+      <div id="ticket-list"></div>
+
+      <div id="detail-panel" class="card" style="margin-top:1.25rem;">
+        <div class="card-body" id="detail-content"></div>
+      </div>
+      <div id="no-selection">
+        <div class="icon">📋</div>
+        <h3>Wybierz zgłoszenie</h3>
+        <p>Kliknij na dowolne zgłoszenie z listy, aby zobaczyć szczegóły.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// KLASY – wymaganie: object / class
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class Ticket {
+  constructor({ name, email, category, title, description, priority }) {
+    this.id          = "TK-" + String(Date.now()).slice(-6);
+    this.name        = name;
+    this.email       = email;
+    this.category    = category;
+    this.title       = title;
+    this.description = description;
+    this.priority    = priority;
+    this.status      = "new";
+    this.createdAt   = new Date().toISOString();
+    this.comments    = [];
+  }
+  // Getter – przykład właściwości obliczanej
+  get priorityWeight() {
+    return { low: 1, medium: 2, high: 3, critical: 4 }[this.priority] || 0;
+  }
+}
+
+class Comment {
+  constructor(author, text) {
+    this.id        = "C" + Date.now();
+    this.author    = author;
+    this.text      = text;
+    this.createdAt = new Date().toISOString();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TICKETSTORE – localStorage (wymaganie: przechowywanie danych)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class TicketStore {
+  constructor() {
+    this.LS_KEY  = "helpdesk_tickets_v3";
+    this.tickets = this._load();
+  }
+  _load() {
+    try { return JSON.parse(localStorage.getItem(this.LS_KEY)) || []; }
+    catch { return []; }
+  }
+  _save() { localStorage.setItem(this.LS_KEY, JSON.stringify(this.tickets)); }
+
+  add(ticket)    { this.tickets.unshift(ticket); this._save(); }
+  remove(id)     { this.tickets = this.tickets.filter(t => t.id !== id); this._save(); }
+  update(id, ch) { const t = this.find(id); if (t) { Object.assign(t, ch); this._save(); } return t; }
+  find(id)       { return this.tickets.find(t => t.id === id); }
+
+  addComment(ticketId, author, text) {
+    const t = this.find(ticketId);
+    if (!t) return null;
+    const c = new Comment(author, text);
+    t.comments.push(c);
+    this._save();
+    return c;
+  }
+
+  // Złożona funkcja: filtrowanie + wyszukiwanie + sortowanie (wymaganie)
+  getFiltered(filter, search, sort) {
+    let list = [...this.tickets];
+    if (filter !== "all") list = list.filter(t => t.status === filter);
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter(t =>
+        t.title.toLowerCase().includes(q)       ||
+        t.name.toLowerCase().includes(q)        ||
+        t.category.toLowerCase().includes(q)    ||
+        t.id.toLowerCase().includes(q)          ||
+        t.description.toLowerCase().includes(q)
+      );
+    }
+    switch (sort) {
+      case "oldest":        list.sort((a,b) => a.createdAt.localeCompare(b.createdAt)); break;
+      case "priority-high": list.sort((a,b) => b.priorityWeight - a.priorityWeight);   break;
+      case "priority-low":  list.sort((a,b) => a.priorityWeight - b.priorityWeight);   break;
+      default:              list.sort((a,b) => b.createdAt.localeCompare(a.createdAt));
+    }
+    return list;
+  }
+
+  getStats() {
+    return {
+      all:      this.tickets.length,
+      new:      this.tickets.filter(t => t.status === "new").length,
+      open:     this.tickets.filter(t => t.status === "open").length,
+      resolved: this.tickets.filter(t => t.status === "resolved").length,
+    };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DRAFTMANAGER – sessionStorage (wymaganie: sessionStorage)
+// Przechowuje szkic formularza w trakcie jednej sesji przeglądarki
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class DraftManager {
+  constructor() { this.KEY = "helpdesk_draft"; }
+  save(data)  { sessionStorage.setItem(this.KEY, JSON.stringify(data)); }
+  load()      { try { return JSON.parse(sessionStorage.getItem(this.KEY)); } catch { return null; } }
+  clear()     { sessionStorage.removeItem(this.KEY); }
+  hasDraft()  {
+    const d = this.load();
+    return d && Object.values(d).some(v => typeof v === "string" && v.trim() !== "");
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HELPDESKAPP – główna logika, DOM, zdarzenia
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class HelpDeskApp {
+  constructor() {
+    this.store    = new TicketStore();
+    this.draft    = new DraftManager();
+    this.filter   = "all";
+    this.sort     = "newest";
+    this.selected = null;
+    this.priority = "medium";
+
+    this._bindForm();
+    this._bindFilters();
+    this._bindSearch();
+    this._bindSort();
+    this._loadDraft();
+    this._render();
+  }
+
+  // ─── FORMULARZ ─────────────────────────────────────────────────────────────
+
+  _bindForm() {
+    // getElementById – wymaganie
+    document.getElementById("btn-submit").addEventListener("click", () => this._submit());
+    document.getElementById("btn-clear-draft").addEventListener("click", () => this._clearDraft());
+
+    // Autosave do sessionStorage przy wpisywaniu – wymaganie: reagowanie na akcje
+    ["f-name", "f-email", "f-title", "f-desc"].forEach(id => {
+      document.getElementById(id).addEventListener("input", () => this._saveDraft());
+    });
+    document.getElementById("f-category").addEventListener("change", () => this._saveDraft());
+
+    // getElementsByClassName – WYMAGANIE (obsługa przycisków priorytetu)
+    const priorityBtns = document.getElementsByClassName("priority-btn");
+    for (let i = 0; i < priorityBtns.length; i++) {
+      priorityBtns[i].addEventListener("click", (e) => {
+        // Usuwamy klasę active ze wszystkich – ponownie getElementsByClassName
+        const allPBtns = document.getElementsByClassName("priority-btn");
+        for (let j = 0; j < allPBtns.length; j++) {
+          allPBtns[j].classList.remove("active");
+        }
+        e.currentTarget.classList.add("active");
+        this.priority = e.currentTarget.dataset.priority;
+        this._saveDraft();
+      });
+    }
+  }
+
+  _saveDraft() {
+    this.draft.save({
+      name:     document.getElementById("f-name").value,
+      email:    document.getElementById("f-email").value,
+      category: document.getElementById("f-category").value,
+      title:    document.getElementById("f-title").value,
+      desc:     document.getElementById("f-desc").value,
+      priority: this.priority,
+    });
+  }
+
+  _loadDraft() {
+    if (!this.draft.hasDraft()) return;
+    const d = this.draft.load();
+    document.getElementById("f-name").value     = d.name     || "";
+    document.getElementById("f-email").value    = d.email    || "";
+    document.getElementById("f-category").value = d.category || "";
+    document.getElementById("f-title").value    = d.title    || "";
+    document.getElementById("f-desc").value     = d.desc     || "";
+
+    if (d.priority) {
+      this.priority = d.priority;
+      // getElementsByClassName – wymaganie
+      const btns = document.getElementsByClassName("priority-btn");
+      for (let i = 0; i < btns.length; i++) {
+        btns[i].classList.toggle("active", btns[i].dataset.priority === d.priority);
+      }
+    }
+    // querySelector – wymaganie
+    document.querySelector("#draft-notice").classList.add("show");
+  }
+
+  _clearDraft() {
+    this.draft.clear();
+    document.querySelector("#draft-notice").classList.remove("show");
+    this._resetForm();
+    this._toast("🗑 Szkic wyczyszczony.");
+  }
+
+  // Walidacja – bardziej złożona funkcja z regex (wymaganie)
+  _validate() {
+    let valid = true;
+    const rules = [
+      { id: "f-name",     err: "err-name",     test: v => v.trim().length >= 2 },
+      { id: "f-email",    err: "err-email",     test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+      { id: "f-category", err: "err-category",  test: v => v !== "" },
+      { id: "f-title",    err: "err-title",     test: v => v.trim().length >= 3 },
+      { id: "f-desc",     err: "err-desc",      test: v => v.trim().length >= 10 },
+    ];
+    rules.forEach(({ id, err, test }) => {
+      const input  = document.getElementById(id);   // getElementById – wymaganie
+      const errEl  = document.getElementById(err);
+      const passed = test(input.value);
+      input.classList.toggle("error", !passed);
+      errEl.classList.toggle("show",  !passed);
+      if (!passed) valid = false;
+    });
+    return valid;
+  }
+
+  _submit() {
+    if (!this._validate()) return;
+    const ticket = new Ticket({
+      name:        document.getElementById("f-name").value.trim(),
+      email:       document.getElementById("f-email").value.trim(),
+      category:    document.getElementById("f-category").value,
+      title:       document.getElementById("f-title").value.trim(),
+      description: document.getElementById("f-desc").value.trim(),
+      priority:    this.priority,
+    });
+    this.store.add(ticket);
+    this.draft.clear();
+    this._resetForm();
+    this._render();
+    this._selectTicket(ticket.id);
+    this._toast("✅ Zgłoszenie " + ticket.id + " zostało dodane!");
+  }
+
+  _resetForm() {
+    ["f-name","f-email","f-title","f-desc"].forEach(id => {
+      document.getElementById(id).value = "";
+      document.getElementById(id).classList.remove("error");
+    });
+    document.getElementById("f-category").value = "";
+    document.getElementById("f-category").classList.remove("error");
+
+    // getElementsByClassName do czyszczenia błędów – wymaganie
+    const errorMsgs = document.getElementsByClassName("error-msg");
+    for (let i = 0; i < errorMsgs.length; i++) {
+      errorMsgs[i].classList.remove("show");
+    }
+
+    this.priority = "medium";
+    const btns = document.getElementsByClassName("priority-btn");
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle("active", btns[i].dataset.priority === "medium");
+    }
+    document.querySelector("#draft-notice").classList.remove("show");
+  }
+
+  // ─── FILTRY / WYSZUKIWANIE / SORTOWANIE ────────────────────────────────────
+
+  _bindFilters() {
+    // querySelectorAll – wymaganie
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        // getElementsByClassName do resetowania active – wymaganie
+        const allFBtns = document.getElementsByClassName("filter-btn");
+        for (let i = 0; i < allFBtns.length; i++) {
+          allFBtns[i].classList.remove("active");
+        }
+        btn.classList.add("active");
+        this.filter = btn.dataset.filter;
+        this._render();
+      });
+    });
+  }
+
+  _bindSearch() {
+    // Reaguje na każde wpisanie znaku – wymaganie
+    document.getElementById("search-input").addEventListener("input", () => this._render());
+  }
+
+  _bindSort() {
+    document.getElementById("sort-select").addEventListener("change", e => {
+      this.sort = e.target.value;
+      this._render();
+    });
+  }
+
+  // ─── RENDER ────────────────────────────────────────────────────────────────
+
+  _render() {
+    this._renderStats();
+    this._renderList();
+    if (this.selected) this._renderDetail(this.selected);
+  }
+
+  _renderStats() {
+    const s = this.store.getStats();
+    document.getElementById("stat-all").textContent      = s.all;
+    document.getElementById("stat-new").textContent      = s.new;
+    document.getElementById("stat-open").textContent     = s.open;
+    document.getElementById("stat-resolved").textContent = s.resolved;
+  }
+
+  _renderList() {
+    const search    = document.getElementById("search-input").value;
+    const list      = this.store.getFiltered(this.filter, search, this.sort);
+    const container = document.getElementById("ticket-list");
+    const countEl   = document.getElementById("list-count");
+
+    const n = list.length;
+    countEl.textContent = n + " " + (n === 1 ? "zgłoszenie" : n < 5 ? "zgłoszenia" : "zgłoszeń");
+    container.innerHTML = "";
+
+    if (n === 0) {
+      // Dynamiczne tworzenie elementów – createElement + appendChild (wymaganie)
+      const wrap = document.createElement("div");
+      wrap.className = "empty-state";
+      const icon = document.createElement("div");
+      icon.className = "icon";
+      icon.textContent = "📭";
+      const msg = document.createElement("p");
+      msg.textContent = "Brak zgłoszeń spełniających kryteria.";
+      wrap.appendChild(icon);
+      wrap.appendChild(msg);
+      container.appendChild(wrap);
+      return;
+    }
+
+    // Każdy element listy tworzony przez createElement + appendChild (wymaganie)
+    list.forEach(t => {
+      const item = document.createElement("div");
+      item.className = "ticket-item" + (t.id === this.selected ? " selected" : "");
+      item.dataset.id = t.id;
+
+      const idRow = document.createElement("div");
+      idRow.className = "ticket-id";
+      idRow.textContent = t.id + " · " + t.category;
+
+      const titleRow = document.createElement("div");
+      titleRow.className = "ticket-title";
+      titleRow.textContent = t.title;
+
+      const descRow = document.createElement("div");
+      descRow.className = "ticket-desc";
+      descRow.textContent = t.description;
+
+      const meta = document.createElement("div");
+      meta.className = "ticket-meta";
+      meta.appendChild(this._makeBadge("status",   t.status));
+      meta.appendChild(this._makeBadge("priority", t.priority));
+
+      const nameSpan = document.createElement("span");
+      nameSpan.style.cssText = "font-size:12px;color:var(--text-muted)";
+      nameSpan.textContent = t.name;
+      meta.appendChild(nameSpan);
+
+      const timeSpan = document.createElement("span");
+      timeSpan.className = "ticket-time";
+      timeSpan.textContent = this._timeAgo(t.createdAt);
+      meta.appendChild(timeSpan);
+
+      item.appendChild(idRow);
+      item.appendChild(titleRow);
+      item.appendChild(descRow);
+      item.appendChild(meta);
+
+      // addEventListener na każdym elemencie – wymaganie
+      item.addEventListener("click", () => this._selectTicket(t.id));
+      container.appendChild(item);
+    });
+  }
+
+  _makeBadge(type, value) {
+    const span = document.createElement("span");
+    span.className = "badge badge-" + type + "-" + value;
+    span.textContent = type === "status" ? this._statusLabel(value) : this._priorityLabel(value);
+    return span;
+  }
+
+  _selectTicket(id) {
+    this.selected = id;
+    // getElementsByClassName do zaznaczenia – wymaganie
+    const items = document.getElementsByClassName("ticket-item");
+    for (let i = 0; i < items.length; i++) {
+      items[i].classList.toggle("selected", items[i].dataset.id === id);
+    }
+    this._renderDetail(id);
+    document.getElementById("detail-panel").classList.add("visible");
+    document.getElementById("no-selection").style.display = "none";
+  }
+
+  _renderDetail(id) {
+    const t = this.store.find(id);
+    if (!t) return;
+    const content = document.getElementById("detail-content");
+    content.innerHTML = "";
+
+    // Nagłówek – createElement + appendChild (wymaganie)
+    const header = document.createElement("div");
+    header.className = "detail-header";
+    const titleEl = document.createElement("div");
+    titleEl.className = "detail-title";
+    titleEl.textContent = t.title;
+    header.appendChild(titleEl);
+    header.appendChild(this._makeBadge("status", t.status));
+    content.appendChild(header);
+
+    // Meta grid
+    const metaGrid = document.createElement("div");
+    metaGrid.className = "detail-meta";
+    [
+      ["ID zgłoszenia", t.id],
+      ["Kategoria",     t.category],
+      ["Zgłaszający",   t.name],
+      ["E-mail",        t.email, "email"],
+      ["Priorytet",     t.priority, "badge"],
+      ["Data dodania",  this._formatDate(t.createdAt)],
+    ].forEach(([lbl, val, type]) => {
+      const cell = document.createElement("div");
+      cell.className = "detail-meta-item";
+      const lspan = document.createElement("span");
+      lspan.textContent = lbl;
+      cell.appendChild(lspan);
+      if (type === "email") {
+        const a = document.createElement("a");
+        a.href = "mailto:" + val; a.textContent = val;
+        a.style.color = "var(--accent)";
+        cell.appendChild(a);
+      } else if (type === "badge") {
+        cell.appendChild(this._makeBadge("priority", val));
+      } else {
+        cell.appendChild(document.createTextNode(val));
+      }
+      metaGrid.appendChild(cell);
+    });
+    content.appendChild(metaGrid);
+
+    // Opis
+    const descBox = document.createElement("div");
+    descBox.className = "detail-desc";
+    descBox.textContent = t.description;
+    content.appendChild(descBox);
+
+    // Akcje statusu
+    const actions = document.createElement("div");
+    actions.className = "detail-actions";
+    [
+      { s: "open",     label: "▶ Otwórz" },
+      { s: "resolved", label: "✓ Rozwiąż" },
+      { s: "closed",   label: "✕ Zamknij" },
+    ].forEach(({ s, label }) => {
+      if (t.status === s) return;
+      const btn = document.createElement("button");
+      btn.className = "btn-action";
+      btn.textContent = label;
+      btn.addEventListener("click", () => {
+        this.store.update(t.id, { status: s });
+        this._toast("✅ Status: " + this._statusLabel(s));
+        this._render();
+      });
+      actions.appendChild(btn);
+    });
+    const btnDel = document.createElement("button");
+    btnDel.className = "btn-action danger";
+    btnDel.textContent = "🗑 Usuń";
+    btnDel.addEventListener("click", () => {
+      if (!confirm("Usunąć zgłoszenie " + t.id + "?")) return;
+      this.store.remove(t.id);
+      this.selected = null;
+      document.getElementById("detail-panel").classList.remove("visible");
+      document.getElementById("no-selection").style.display = "";
+      this._toast("🗑 Zgłoszenie usunięto.");
+      this._render();
+    });
+    actions.appendChild(btnDel);
+    content.appendChild(actions);
+
+    // Sekcja komentarzy
+    const commSection = document.createElement("div");
+    commSection.className = "comments-section";
+
+    const commTitle = document.createElement("div");
+    commTitle.className = "comments-title";
+    commTitle.textContent = "Komentarze (" + t.comments.length + ")";
+    commSection.appendChild(commTitle);
+
+    const commList = document.createElement("div");
+    commList.className = "comment-list";
+    if (t.comments.length === 0) {
+      const ep = document.createElement("p");
+      ep.style.cssText = "font-size:13px;color:var(--text-muted)";
+      ep.textContent = "Brak komentarzy.";
+      commList.appendChild(ep);
+    } else {
+      t.comments.forEach(c => {
+        const ci = document.createElement("div");
+        ci.className = "comment-item";
+        const cm = document.createElement("div");
+        cm.className = "comment-meta";
+        cm.textContent = "🛠 " + c.author + " · " + this._formatDate(c.createdAt);
+        ci.appendChild(cm);
+        ci.appendChild(document.createTextNode(c.text));
+        commList.appendChild(ci);
+      });
+    }
+    commSection.appendChild(commList);
+
+    const addRow = document.createElement("div");
+    addRow.className = "comment-add";
+    const cTA = document.createElement("textarea");
+    cTA.placeholder = "Dodaj komentarz lub notatkę...";
+    const cBtn = document.createElement("button");
+    cBtn.className = "btn-comment";
+    cBtn.textContent = "Wyślij";
+    cBtn.addEventListener("click", () => {
+      const txt = cTA.value.trim();
+      if (!txt) return;
+      this.store.addComment(t.id, "Support", txt);
+      cTA.value = "";
+      this._renderDetail(t.id);
+    });
+    addRow.appendChild(cTA);
+    addRow.appendChild(cBtn);
+    commSection.appendChild(addRow);
+    content.appendChild(commSection);
+  }
+
+  // ─── UTILS ─────────────────────────────────────────────────────────────────
+
+  _toast(msg) {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2800);
+  }
+
+  _statusLabel(s) {
+    return { new: "Nowe", open: "W trakcie", resolved: "Rozwiązane", closed: "Zamknięte" }[s] || s;
+  }
+
+  _priorityLabel(p) {
+    return { low: "Niski", medium: "Średni", high: "Wysoki", critical: "Krytyczny" }[p] || p;
+  }
+
+  _formatDate(iso) {
+    return new Date(iso).toLocaleString("pl-PL", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  }
+
+  _timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso)) / 1000;
+    if (diff < 60)    return "przed chwilą";
+    if (diff < 3600)  return Math.floor(diff / 60) + " min temu";
+    if (diff < 86400) return Math.floor(diff / 3600) + " godz. temu";
+    return Math.floor(diff / 86400) + " dni temu";
+  }
+}
+
+// ─── START ────────────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => { window.app = new HelpDeskApp(); });
+</script>
+</body>
+</html>
