@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEVDESKPRO</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="container topbar">
+      <div class="brand">
+        <div class="logo">SD</div>
+        <div>
+          <h1>SEVDESKPRO</h1>
+        </div>
+      </div>
+      <nav>
+        <a href="#start">Start</a>
+        <a href="#panel">Panel</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="start">
+      <div class="hero-card">
+        <h2>SEVDESKPRO</h2>
+        <p>
+          Prosta aplikacja do obsługi zgłoszeń. Możesz dodawać nowe problemy, filtrować je,
+          zmieniać statusy i trzymać wszystko w jednym miejscu.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#panel">Przejdź do panelu</a>
+          <button class="btn btn-secondary" id="loadDemoBtn">Załaduj dane demo</button>
+        </div>
+      </div>
+
+      <div class="preview-grid">
+        <div class="stat">
+          <small>Wszystkie zgłoszenia</small>
+          <strong id="allCount">0</strong>
+        </div>
+        <div class="stat">
+          <small>Nowe</small>
+          <strong id="openCount">0</strong>
+        </div>
+        <div class="stat">
+          <small>W trakcie</small>
+          <strong id="progressCount">0</strong>
+        </div>
+        <div class="stat">
+          <small>Zamknięte</small>
+          <strong id="closedCount">0</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel">
+      <div class="section-title">
+        <div>
+          <h3>Panel helpdesk</h3>
+          <p>Dodawaj zgłoszenia, wyszukuj je i zmieniaj ich status w jednym panelu.</p>
+        </div>
+      </div>
+
+      <div class="dashboard">
+        <div class="panel">
+          <h4>Dodaj zgłoszenie</h4>
+          <div class="error" id="formError"></div>
+          <form id="ticketForm">
+            <div class="field">
+              <label for="title">Tytuł zgłoszenia</label>
+              <input type="text" id="title" placeholder="Np. Brak internetu w sali 105" />
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="category">Kategoria</label>
+                <select id="category">
+                  <option value="Sieć">Sieć</option>
+                  <option value="Sprzęt">Sprzęt</option>
+                  <option value="Oprogramowanie">Oprogramowanie</option>
+                  <option value="Konto użytkownika">Konto użytkownika</option>
+                  <option value="Inne">Inne</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="priority">Priorytet</label>
+                <select id="priority">
+                  <option value="Niski">Niski</option>
+                  <option value="Średni">Średni</option>
+                  <option value="Wysoki">Wysoki</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="author">Zgłaszający</label>
+                <input type="text" id="author" placeholder="Np. Seweryn K." />
+              </div>
+              <div class="field">
+                <label for="room">Lokalizacja / sala</label>
+                <input type="text" id="room" placeholder="Np. Sala 208" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="description">Opis problemu</label>
+              <textarea id="description" placeholder="Opisz dokładnie problem..."></textarea>
+              <div class="helper">Wpisz krótko, ale konkretnie, co się dzieje.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Dodaj zgłoszenie</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h4>Lista zgłoszeń</h4>
+
+          <div class="toolbar">
+            <input type="text" id="searchInput" placeholder="Szukaj po tytule, autorze lub kategorii..." />
+            <select id="statusFilter">
+              <option value="Wszystkie">Wszystkie statusy</option>
+              <option value="Nowe">Nowe</option>
+              <option value="W trakcie">W trakcie</option>
+              <option value="Zamknięte">Zamknięte</option>
+            </select>
+            <select id="priorityFilter">
+              <option value="Wszystkie">Wszystkie priorytety</option>
+              <option value="Niski">Niski</option>
+              <option value="Średni">Średni</option>
+              <option value="Wysoki">Wysoki</option>
+            </select>
+            <button class="btn btn-secondary" id="clearAllBtn" type="button">Wyczyść dane</button>
+          </div>
+
+          <div class="tickets-list" id="ticketsList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    SEVDESKPRO
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
